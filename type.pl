@@ -27,7 +27,7 @@ sub from {
     my ($num, $letters) = @_;
     my @ret;
     foreach my $letter (split //, $letters) {
-	push @ret, ($letter => $num++);
+        push @ret, ($letter => $num++);
     }
     return @ret;
 }
@@ -36,30 +36,30 @@ while (1) {
     my $key = getc(STDIN);
 
     if ($key eq "\033") {
-	$key .= getc(STDIN);
-	$key .= getc(STDIN);
-	if ($key eq "\x1b[3") {
-	    $key .= getc(STDIN);
-	}
+        $key .= getc(STDIN);
+        $key .= getc(STDIN);
+        if ($key eq "\x1b[3") {
+            $key .= getc(STDIN);
+        }
     }
 
     my $shift_down = 0;
     if ($key =~ /^[A-Z]$/) {
-	$shift_down = 1;
-	syswrite($fh, event(42, 1));  # left shift
-	$key = lc($key);
+        $shift_down = 1;
+        syswrite($fh, event(42, 1));  # left shift
+        $key = lc($key);
     }
 
     my $code = $code_map{$key};
 
     unless (defined $code) {
-	if (length($key) == 1) {
-	    print "UNKNOWN KEY!  key=$key, ord=", ord($key), "\n";
-	} else {
-	    $key =~ s/[^[:print:]]/sprintf("\\x%02x", ord($&))/eg;
-	    print "UNKNOWN SEQUENCE: $key\n";
-	}
-	next;
+        if (length($key) == 1) {
+            print "UNKNOWN KEY!  key=$key, ord=", ord($key), "\n";
+        } else {
+            $key =~ s/[^[:print:]]/sprintf("\\x%02x", ord($&))/eg;
+            print "UNKNOWN SEQUENCE: $key\n";
+        }
+        next;
     }
 
 
@@ -67,8 +67,8 @@ while (1) {
     syswrite($fh, event($code, 0));
 
     if ($shift_down) {
-	# let it go
-	syswrite($fh, event(42, 0));
+        # let it go
+        syswrite($fh, event(42, 0));
     }
 
 }
@@ -79,10 +79,10 @@ sub event {
     my $evtime_sec = int($event_time);
     my $evtime_usec = int(($event_time - $evtime_sec) * 1e9);
     return pack("LLSSl",
-		$evtime_sec, $evtime_usec,
-		1,   # keyboard event
-		$code,
-		$down);
+                $evtime_sec, $evtime_usec,
+                1,   # keyboard event
+                $code,
+                $down);
 }
 
 sub boot_time {
