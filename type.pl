@@ -1,12 +1,26 @@
 #!/usr/bin/perl
+# Author: Brad Fitzpatrick <brad@danga.com>, 2008-12-14
+# License: whatever.
 
 use strict;
+use File::Temp;
 use Time::HiRes qw(time);
 
 my $boot_time = boot_time();
 
-system("stty", '-icanon', 'eol', "\001") and die;
-open(my $fh, ">/dev/input/event2") or die;
+my $keyboard = "/dev/input/event2";
+unless (-c $keyboard) {
+    require File::Temp;
+    my ($fh, $filename) = File::Temp::tempfile();
+    system("mknod", "c", 13, 66) and die "mknod failed.";
+    $keyboard = $filename;
+}
+
+system("stty", '-icanon', 'eol', "\001")
+    and die "stty failed";
+
+open(my $fh, ">$keyboard")
+    or die "Opening keyboard for write failed.";
 
 my %code_map = (
     chr(127) => 14,  # backspace
