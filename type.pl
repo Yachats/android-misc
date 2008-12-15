@@ -12,7 +12,8 @@ my $keyboard = "/dev/input/event2";
 unless (-c $keyboard) {
     require File::Temp;
     my ($fh, $filename) = File::Temp::tempfile();
-    system("mknod", "c", 13, 66) and die "mknod failed.";
+    unlink($filename);  # race!
+    system("mknod", $filename, "c", 13, 66) and die "mknod failed.";
     $keyboard = $filename;
 }
 
